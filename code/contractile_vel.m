@@ -16,7 +16,7 @@ F_VEL = -1;
 tol = 0.001;
 vStep = tol/10;
 V = 0;
-while abs(F_VEL-F_EXT/F_MAXLOCAL) > tol
+while abs(F_VEL-F_EXT/F_MAXLOCAL) > tol && abs(V) < abs(V_MAX)
     if C_TYPE < 0 % CONCENTRIC
         V = V-vStep;
     elseif C_TYPE > 0 % ECCENTRIC - DYNAMIC FORCE ENHANCEMENT

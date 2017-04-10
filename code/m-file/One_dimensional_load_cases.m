@@ -3,16 +3,7 @@
 clear all
 addpath('..\');
 addpath('..\..\..\1D-Hill-2-Component-Model\code');
-MEMBUFF = 1000;
-
-%%
-% Open-points (as at 10-April)
-%
-% # Does not converge for L_INIT > 0.59
-
-
-
-
+MEMBUFF = 5000;
 
 %% 
 % Global plotting options
@@ -45,7 +36,7 @@ F_MAXECC = 2*F_MAX; %N
 % # Free one end of the muscle and instantly apply an external load: $F_{EXT}$
 % # Find the resulting final length of the muscle
 
-L_INIT = 0.55;
+L_INIT = 0.59;
 alpha = 1;
 V = 0; % for an isometric contraction
 
@@ -108,7 +99,7 @@ L_PREV = L_MAX/2;
 F_PASS(i) = F_PASS_INIT;
 
 
-while abs(V_PREV) > tol && L_PREV > 0 && L_PREV < L_MAX
+while abs(V_PREV) > tol && L_PREV > L_MIN && L_PREV < L_MAX
     % find $F_{MAX}^{LOCAL}$
     % find the "local" F_{MAX}^{LOCAL}, i.e. the F_{MAX} at the given (inital) length L_{INIT}
     F_MAXLOCAL = force_length(L_CURR(i), L_REST, F_MAX);
@@ -125,7 +116,7 @@ while abs(V_PREV) > tol && L_PREV > 0 && L_PREV < L_MAX
     i = i+1;
     % find the total muscle force (without RESIDUAL FORCE ENHACENEMENT)
     [F_MUSC(i),F_ACT(i),F_PASS(i)] = force_muscle(L_CURR(i), ... 
-        L_REST, V_MAX, V_C(i), F_MAXLOCAL, alpha, F_MAXECC);    
+        L_REST, V_MAX, V_C(i), F_MAX, alpha, F_MAXECC);    
     
 end
 
