@@ -36,7 +36,7 @@ F_MAXECC = 2*F_MAX; %N
 % # Free one end of the muscle and instantly apply an external load: $F_{EXT}$
 % # Find the resulting final length of the muscle
 
-L_INIT = 0.575;
+L_INIT = 0.625;
 alpha = 1;
 V = 0; % for an isometric contraction
 
@@ -67,18 +67,11 @@ V = 0; % for an isometric contraction
 % - and the length is found where $F_{EXT}$ is the  $F_{MAX}^{LOCAL}$ - and the 
 % muscle is at rest.
 %
-% *Remark a*: Here the acceleration and deceleration phases of the muscle are
+% *Remark*: Here the acceleration and deceleration phases of the muscle are
 % not explicitly modeled. In that the muscle has no mass. Any acceleration
 % or deceleration that arises is due to the dynamic change in the
 % force-velocity relationship; i.e. $F_{VEL} = f(V,L,V_{MAX},F_{MAX}^{LOCAL})$
 %
-% *Remark b:* The shape parameters for the force-velocity relationship are
-% computed with the $F_{MAX}^{LOCAL}$ such that;
-%
-% $$b = a\times V_{MAX}/F_{MAX}^{LOCAL}$$
-%
-% where $a=0.25$ is defined. This assures that the force-velocity
-% relationship always gives $F_{MAX}^{LOCAL}$ when $V=0$.
 % 
 % *Force enhancement* occurs for the case when a fully activated muscle
 % is undergoing an eccentrinc contraction; infact only on the decending
@@ -99,7 +92,7 @@ V = 0; % for an isometric contraction
 %
 
 % Specify the external load
-F_EXT = 6; 
+F_EXT = 0.5; 
 % define a time-step
 tStep = 0.01; %s
 tol = 0.05;
@@ -175,8 +168,7 @@ while abs(F_DIFF) > tol
 
     % update increment
     i = i+1;      
-        
-        
+
 end
 
 
