@@ -24,6 +24,6 @@ while abs(F_VEL-F_EXT/F_MAXLOCAL) > tol && abs(V) < abs(V_MAX)
     elseif C_TYPE == 0 % ISOMETRIC
         V = 0;
     end
-    F_VEL = force_vel(V_MAX, V, F_MAXLOCAL,F_MAXECC, L_TOT, L_REST);
+    F_VEL = force_vel(V_MAX, V, F_MAXLOCAL,F_MAXECC);
 end
 V_C = V; % velocity of contraction
