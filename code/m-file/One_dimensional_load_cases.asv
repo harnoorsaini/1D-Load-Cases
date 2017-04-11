@@ -3,7 +3,7 @@
 clear all
 addpath('..\');
 addpath('..\..\..\1D-Hill-2-Component-Model\code');
-MEMBUFF = 20000;
+MEMBUFF = 10000;
 
 %% 
 % Global plotting options
@@ -19,7 +19,7 @@ sploty = 2;
 % loading and $V_{max}$ is the maximum velocity of shortening.
 
 % Minimum length 
-L_MIN = 0.2; %mm 
+L_MIN = 0.1; %mm 
 % Maximum length 
 L_MAX = 0.8; %mm
 L_REST = 0.5; %mm
@@ -36,7 +36,7 @@ F_MAXECC = 2*F_MAX; %N
 % # Free one end of the muscle and instantly apply an external load: $F_{EXT}$
 % # Find the resulting final length of the muscle
 
-L_INIT = 0.575;
+L_INIT = 0.2;
 alpha = 1;
 V = 0; % for an isometric contraction
 
@@ -99,10 +99,10 @@ V = 0; % for an isometric contraction
 %
 
 % Specify the external load
-F_EXT = 6; 
+F_EXT = 1; 
 % define a time-step
 tStep = 0.01; %s
-tol = 0.05;
+tol = 0.01;
 
 V_C = ones(1,MEMBUFF);
 L_CURR(MEMBUFF) = zeros;
@@ -119,7 +119,7 @@ F_DIFF = 1;
 F_PASS(i) = F_PASS_INIT;
 ENH_START = 0;
 
-RFH = 1;
+RFH = 1
 
 while abs(F_DIFF) > tol
 %while abs(V_PREV) > tol && L_PREV > L_MIN && L_PREV < L_MAX
@@ -129,17 +129,15 @@ while abs(F_DIFF) > tol
     F_MAXLOCAL = F_MAXLOCAL*F_MAX;
 
     
-    % eccentric on dec. & asc. limb; then residual force enhancement
-    if RFH == 1
-        if V_C(i) > 0
-            F_MAXLOCAL = F_MUSC(i-1);
-        end
+    % eccentric on decending limb; then residual force enhancement
+    if V_C(i) > 0 && L_CURR(i) > L_REST 
+        F_MAXLOCAL = F_MUSC(i-1);
     end
     
     % contractile velocity for a given F_{EXT}
     % remove the passive component
     F_EXT_ACC = F_EXT - F_PASS(i);
-    V_C(i) = contractile_vel(F_EXT_ACC, V_MAX, F_MAXECC, F_MAXLOCAL, L_CURR(i), L_REST);
+    V_C(i) = contractile_vel(F_EXT_ACC, V_MAX, F_MAXECC, F_MAXLOCAL);
     % update muscle length
     L_CURR(i+1) = L_CURR(i) + V_C(i)*tStep;
     %V_PREV = V_C(i);
@@ -148,26 +146,23 @@ while abs(F_DIFF) > tol
  
     % Find the total muscle force (without RESIDUAL FORCE ENHACENEMENT)
     % at zero velocity i.e. here F_{MAX}^{LOCAL} = F_{EXT}
-    [F_MUSC(i),F_ACT(i),F_PASS(i)] = force_muscle(L_CURR(i), ... 
+    [F_MUSC(i),F_ACT(i),F_PASS(i)] = force_muscle(L_CURR(i+1), ... 
         L_REST, V_MAX, 0, F_MAX, alpha, F_MAXECC); 
     
     % RESIDUAL FORCE ENHANCEMENT
-    if RFH == 1
-        if V_C(i) < 0
-            % do nothing
-        elseif V_C(i) > 0 && L_CURR(i) > L_REST
-            if ENH_START == 0
-                L_ENH_START = L_CURR(i);
-                F_ENH_START = F_MUSC(i);
-            end
-            ENH_START = 1;
-            % residual force enhancement at current length
-            F_ENH(i) = force_enhance(L_CURR(i), F_MUSC(i), L_ENH_START, F_ENH_START);
+    if V_C(i) < 0
+        % do nothing
+    elseif V_C(i) > 0 && L_CURR(i+1) > L_REST
+        if ENH_START == 0
+            L_ENH_START = L_CURR(i+1);
+            F_ENH_START = F_MUSC(i);
         end
+        ENH_START = 1;
+        % ressidual force enhancement at current length
+        F_ENH(i) = force_enhance(L_CURR(i+1), F_MUSC(i)-F_PASS(i), L_ENH_START, F_ENH_START);
     end
     
     % ADD IN RESIDUAL FORCE ENHANCEMENT
-    %F_MUSC(i) = F_MUSC(i)+F_ENH(i);
     F_MUSC(i) = max(F_MUSC(i),F_MUSC(i)+F_ENH(i));
     
     % for convergence
@@ -178,7 +173,6 @@ while abs(F_DIFF) > tol
         
         
 end
-
 
 % time vector (for plotting)
 tvec = 0:tStep:tStep*(i-2);
