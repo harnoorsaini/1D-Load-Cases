@@ -1,6 +1,7 @@
 %% External Loading of 1D Lumped Parameter Muscle Models
 
 clear all
+addpath('..\');
 addpath('..\..\..\1D-Hill-2-Component-Model\code');
 MEMBUFF = 20000;
 
